@@ -63,7 +63,7 @@ knitr::include_graphics("img/entidades.png")
 ```
 \
 \
-En el desarrollo de este trabajo se ha procesado datos de 46 informes generados por OpenVAS. Los informes generaron información de **431** vulnerabilidades con diferentes niveles de severidad.
+En el desarrollo de este trabajo se ha procesado datos de **46** informes reales generados por OpenVAS e indetificados por un **id** único asignado por la aplicación. Los informes generaron información de **431** vulnerabilidades con diferentes niveles de severidad.
 \
 \
 ```{r pressure, echo=FALSE}
@@ -71,7 +71,7 @@ plot.severidad
 ```
 \
 \
-OpenVAS contabiliza las vulnerabilidades en base a los reportes de seguridad que en varios casos incluyen multiples vulnerabilidades. En nuestro análisis procedimos a desagregar todas las vulnerabilidades por cada registro CVE referenciado. De la misma forma se identificó vulnerabilidades que no cuentan con un registro CVE dentro de sus referencias.
+OpenVAS contabiliza las vulnerabilidades en base a los reportes de seguridad que en varios casos incluyen multiples vulnerabilidades y toma la calificación más alta de severidad en estos casos. En nuestro análisis procedimos a desagregar todas las vulnerabilidades por cada registro CVE referenciado. De la misma forma se identificó vulnerabilidades que no cuentan con un registro CVE dentro de sus referencias.
 \
 \
 ```{r, echo=FALSE}
@@ -87,7 +87,7 @@ knitr::kable(nocve.diff, caption = "Listado de vulnerabilidades con CVE sin regi
 ```
 \
 \
-También se realizó la validación de los CVE que no cuenten con una calificación según el framework CVSSv2. Con esta validación se realizó el descarte de **1** registro incluído en los reportes de OpenVAS
+También se realizó la validación de los CVE que no cuentan con una calificación según el framework **CVSSv2**. Con esta validación se realizó el descarte de **1** registro incluído en los reportes de OpenVAS
 \
 \
 ```{r, echo=FALSE}
@@ -95,7 +95,7 @@ knitr::kable(noscore, caption = "Listado de vulnerabilidades sin registro de sco
 ```
 \
 \
-Con los CVE validados **(538)** se procedió a realizar un análisis comparativo, según las métricas definidas en el framework **CVSSv2**, con la finalidad de identificar, visualmente, la concentración de vulnerabilidades consideradas críticas por su calificación alta según su **severidad**, **explotabilidad** e **impacto** que permita focalizar la aplicación de medidas correctivas.
+Con los CVE validados **(538)** se procedió a realizar un análisis comparativo, según las métricas definidas en el framework **CVSSv2**, con la finalidad de identificar, visualmente, la concentración de vulnerabilidades consideradas críticas según su **severidad**, **explotabilidad** e **impacto** que permita focalizar la aplicación de medidas correctivas.
 \
 \
 ```{r, echo=FALSE}
@@ -110,7 +110,7 @@ knitr::kable(multi, caption = "Tabla de total de vulnerabilidades por métrica")
 ```
 \
 \
-También, en el análisis se evidenció que **266** de las **538** vulnerabilidades se encontraban dentro de la lista de las debilidades de software más peligrosas del Top CWE 2020 **(Most Dangerous Software Weaknesses)**
+También, en el análisis se evidenció que **266** de las **538** vulnerabilidades se encontraban dentro de la lista de las debilidades de software más peligrosas del **Top CWE 2020 (Most Dangerous Software Weaknesses)**
 \
 \
 ```{r, echo=FALSE}
@@ -118,7 +118,7 @@ plot.cwetop
 ```
 \
 \
-De la misma forma se evidenció que **160** de las **538** vulnerabilidades se encontraban dentro de la lista de los riesgos de seguridad en aplicaciones web del OWASP Top Ten 2017 **(Web Application Security Risks)**
+De la misma forma se evidenció que **160** de las **538** vulnerabilidades se encontraban dentro de la lista de los riesgos de seguridad en aplicaciones web del **OWASP Top Ten 2017 (Web Application Security Risks)**
 \
 \
 ```{r, echo=FALSE}
