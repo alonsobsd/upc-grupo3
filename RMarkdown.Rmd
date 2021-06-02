@@ -143,3 +143,5 @@ knitr::kable(highscore, caption = "Listado de vulnerabilidades con prioridad de 
 ## Comentarios finales
 
 - El alcance del trabajo ha podido ser mayor debido a la cantidad de datos que se puede procesar, transformar y mostrar pero por razones de tiempo ha sido acotado a esta primera fase en donde se ha querido sentar las bases de lo que se puede hacer en un análisis de este tipo aplicando lo aprendido en clase
+
+- No se ha incluído los **46** reportes en formato **xml** de OpenVAS por razones de confidencialidad del contenido, pero se ha grabado los archivos **RDS** utilizados, con la información extraída, en el directorio **dataframes**
