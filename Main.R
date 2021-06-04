@@ -238,7 +238,7 @@ plot.cwetop <- ggplot(cwe.merge1) +
       size = 15L,
       face = "bold"
     )
-  ) + guides(fill = guide_legend(nrow = 20, byrow = TRUE))
+  )
 
 #
 # Cuadro de vulnerabilidades encontradas que están dentro del OWAS Top List
