@@ -1,7 +1,7 @@
 ---
 title: "Data Science - Trabajo Final"
 author: "UPC Perú - Grupo 3"
-date: "01/06/2021"
+date: "04/06/2021"
 output:
   html_document: default
   pdf_document: default
@@ -119,7 +119,17 @@ También, en el análisis se evidenció que **266** de las **538** vulnerabilida
 ```{r, echo=FALSE}
 plot.cwetop
 
-knitr::kable(cwe.legend1, caption = "Tabla de CWE que son parte del CWE Top List")
+reactable(cwe.legend1, pagination = FALSE, resizable = TRUE, 
+          columns = list(
+            cwe = colDef(width = 150, cell = function(value) {
+              link <- str_replace(value, "CWE-","")
+              url <- sprintf("https://cwe.mitre.org/data/definitions/%s.html", link)
+              htmltools::tags$a(href = url, as.character(value))
+            }
+              ),
+            nombre = colDef(aggregate = "unique")
+          ), bordered = TRUE, highlight = TRUE
+)
 ```
 \
 \
@@ -129,7 +139,18 @@ De la misma forma se evidenció que **160** de las **538** vulnerabilidades se e
 ```{r, echo=FALSE}
 plot.owastop
 
-knitr::kable(cwe.legend2, caption = "Tabla de CWE que son parte del OWASP Top List")
+reactable(cwe.legend2, pagination = FALSE, resizable = TRUE, 
+          columns = list(
+            cwe = colDef(width = 150, cell = function(value) {
+              link <- str_replace(value, "CWE-","")
+              url <- sprintf("https://cwe.mitre.org/data/definitions/%s.html", link)
+              htmltools::tags$a(href = url, as.character(value))
+            }
+              ),
+            nombre = colDef(aggregate = "unique")
+          ), bordered = TRUE, highlight = TRUE
+)
+
 ```
 \
 \
