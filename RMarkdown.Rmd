@@ -55,7 +55,7 @@ Sí bien es cierto OpenVAS genera documentos completos y detallados, sobre las v
 
 ## Propuesta de solución
 \
-Con la finalidad de plantear una solución que pueda ayudar al análisis de las vulnerabilidades encontradas se ha planteado utilizar, principalmente, 4 fuentes de datos: los reportes de **OpenVAS** en formato **xml** por cada dispositivo analizado, la base de datos de NVD-CVE hasta el año 2021, la lista del top de las vulnerabilidades más críticas de CWE **(Common Weakness Enumeration)** y de OWASP **(Open Web Application Security Project)**. Estas entidades serán la base que se utilizará para la extracción , transformación y presentación del análisis que ha sido parte de este trabajo. 
+Con la finalidad de plantear una solución que pueda ayudar al análisis de las vulnerabilidades encontradas se ha planteado utilizar, principalmente, 4 fuentes de datos: los reportes de **OpenVAS** en formato **xml** por cada dispositivo analizado, la base de datos de **NVD-CVE** hasta el año 2021, la lista del top de las vulnerabilidades más críticas de CWE **(Common Weakness Enumeration)** y de OWASP **(Open Web Application Security Project)**. Estas entidades serán la base que se utilizará para la extracción , transformación y presentación del análisis que ha sido parte de este trabajo. 
 \
 \
 ```{r, echo=FALSE, out.width = '100%'}
@@ -63,7 +63,7 @@ knitr::include_graphics("img/entidades.png")
 ```
 \
 \
-En el desarrollo de este trabajo se ha procesado datos de **46** informes reales generados por OpenVAS e indetificados por un **id** único asignado por la aplicación. Los informes generaron información de **431** vulnerabilidades con diferentes niveles de severidad.
+En el desarrollo de este trabajo se ha procesado datos de **46** informes reales generados por OpenVAS e indentificados por un **id** único asignado por la aplicación. Los informes generaron información de **431** vulnerabilidades con diferentes niveles de severidad.
 \
 \
 ```{r pressure, echo=FALSE}
@@ -71,7 +71,7 @@ plot.severidad
 ```
 \
 \
-OpenVAS contabiliza las vulnerabilidades en base a los reportes de seguridad que en varios casos incluyen multiples vulnerabilidades y toma la calificación más alta de severidad en estos casos. En nuestro análisis procedimos a desagregar todas las vulnerabilidades por cada registro CVE referenciado. De la misma forma se identificó vulnerabilidades que no cuentan con un registro CVE dentro de sus referencias.
+OpenVAS contabiliza las vulnerabilidades en base a los reportes de seguridad que en varios casos incluyen múltiples vulnerabilidades y toma la calificación más alta de severidad en estos casos. En nuestro análisis procedimos a desagregar todas las vulnerabilidades por cada registro CVE referenciado. De la misma forma se identificó vulnerabilidades que no cuentan con un registro CVE dentro de sus referencias.
 \
 \
 ```{r, echo=FALSE}
@@ -79,7 +79,10 @@ plot.pie
 ```
 \
 \
-En el análisis desarrollado nos hemos centrado en todas las vulnerabilidades que cuenten con un registro CVE ya que su existencia nos ayuda a garantizar que no se trate de falsos positivos. Por esta razón, realizamos una validación de la existencia de los **542** CVE incluídos en los reportes de OpenVAS que se encuentren registrados en la NVD-NIST (National Vulnerability Database). Con esa verificación se descartaron **3** vulnerabilidades encontradas en diferentes informes **(id)**
+En el análisis desarrollado nos hemos centrado en todas las vulnerabilidades que cuenten con un registro CVE ya que su existencia nos ayuda a garantizar que no se trate de falsos positivos o de información no actualizada. Cabe señalar que las vulnerabilidades descartadas o que no cuentan con una registro CVE deben ser extraídas y analizadas ya que muchas de ellas cuentan con información de la vulnerabilidad en la página del desarrollador, en otras bases de datos de reportes de seguridad o han sido descartadas por falta de informaicón o como producto de una evaluación posterior. El alcance de este informe solo está orientado hacia las vulnerabilidades existentes en la NVD-NIST y que están referenciadas dentro de los reportes de OpenVAS. 
+\
+\
+Dentro de las rutinas implementadas, se incluyeron algunas que realizaban la validación de existencia de los **542** CVE incluídos en los reportes de OpenVAS que se encuentran registrados en la NVD-NIST **(National Vulnerability Database)**. Con esta verificación se descartaron **3** vulnerabilidades encontradas en diferentes informes **(id)**. 
 \
 \
 ```{r, echo=FALSE}
@@ -115,6 +118,8 @@ También, en el análisis se evidenció que **266** de las **538** vulnerabilida
 \
 ```{r, echo=FALSE}
 plot.cwetop
+
+knitr::kable(cwe.legend1, caption = "Tabla de CWE que son parte del CWE Top List")
 ```
 \
 \
@@ -123,14 +128,34 @@ De la misma forma se evidenció que **160** de las **538** vulnerabilidades se e
 \
 ```{r, echo=FALSE}
 plot.owastop
+
+knitr::kable(cwe.legend2, caption = "Tabla de CWE que son parte del OWASP Top List")
 ```
 \
 \
-Finalmente, con la información analizada se propuso una lista con **47** vulnerabilidades incluídas en los **46** informes **(id)** de OpenVAS cuya atención debe ser priorizada debido a la calificación obtenida en las métricas de evaluación del framework **CVSSv2**
+Finalmente, con la información analizada se propuso una lista con **47** vulnerabilidades incluídas en los **46** informes **(id)** de OpenVAS cuya atención debe ser priorizada debido a la calificación alta **(high)** obtenida en la calificación según las métricas de evaluación del framework **CVSSv2**: severidad **(S)**, explotabilidad **(E)** e impacto **(I)** 
 \
 \
 ```{r, echo=FALSE}
-knitr::kable(highscore, caption = "Listado de vulnerabilidades con prioridad de atención")
+reactable(highscore, groupBy = c("id"), pagination = FALSE, resizable = TRUE, 
+          columns = list(
+            id = colDef(aggregate = "unique", width = 350),            
+            cve = colDef(width = 150, cell = function(value) {
+              url <- sprintf("https://nvd.nist.gov/vuln/detail/%s", value)
+              htmltools::tags$a(href = url, as.character(value))
+            }
+              ),
+            cvssV2 = colDef(width = 50, name = "S", align = "center", 
+                            style = list(color = "#E00000")
+              ),
+            exploitV2 = colDef(width = 50, name = "E", align = "center",
+                            style = list(color = "#E00000")                               
+                               ),
+            impactV2 = colDef(width = 50, name = "I", align = "center",
+                            style = list(color = "#E00000")                              
+                              )           
+          ), bordered = TRUE, highlight = TRUE
+)
 ```
 
 ## Conclusiones

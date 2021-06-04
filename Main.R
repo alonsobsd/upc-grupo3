@@ -5,6 +5,7 @@ library("dplyr")
 library("jsonlite")
 library("ggplot2")
 library("stringr")
+library("reactable")
 
 #
 # Carga o extrae los datos desde los resultados de OpenVAS
@@ -196,7 +197,7 @@ plot.comparativo <- barplot(multi, xlab = "Tipo de análisis", ylab = "Nro. vuln
 # Relación de vulnerabilidades que deberán ser atendidas como prioridad
 #
 
-highscore <- dfcomparativo %>% filter(cvssV2 > 6.9 & exploitV2 > 6.9 & impactV2 > 6.9) %>% select(id, vuln, cve, cvssV2, exploitV2, impactV2)
+highscore <- dfcomparativo %>% filter(cvssV2 > 6.9 & exploitV2 > 6.9 & impactV2 > 6.9) %>% select(id, vuln, cve, cvssV2, exploitV2, impactV2) %>% arrange(desc(cvssV2, exploitV2, impactV2), .by_group = TRUE )
 
 #
 # Cuadro de vulnerabilidades encontradas que están dentro del CWE Top List
@@ -204,14 +205,17 @@ highscore <- dfcomparativo %>% filter(cvssV2 > 6.9 & exploitV2 > 6.9 & impactV2 
 
 dfcwe <- merge(cve.final, nvt.final, by="cve")
 
-cwe.merge1 <- dfcwe %>% inner_join(cwetop.final, by="cwe") %>% select(cwe) %>% group_by(cwe) %>% count(cwe)
+cwe.merge1 <- dfcwe %>% inner_join(cwetop.final, by="cwe") %>% select(cwe, nombre) %>% group_by(cwe, nombre) %>% count(cwe)
+
+cwe.legend1 <- cwe.merge1[order(cwe.merge1$n, cwe.merge1$nombre, decreasing = TRUE), ] %>% select(cwe, nombre)
 
 plot.cwetop <- ggplot(cwe.merge1) +
-  aes(x = cwe, fill = cwe, weight = n) +
+  aes(x = cwe, fill = nombre, weight = n) +
+  scale_x_discrete(limits = cwe.merge1$cwe[order(cwe.merge1$n, cwe.merge1$nombre)]) + 
+  scale_fill_hue(limits = cwe.merge1$nombre[order(cwe.merge1$n, cwe.merge1$nombre)], l = 40, c = 65) +    
   geom_bar() +
   geom_text(aes(y = n, label = n, hjust = -0.3))+
-  scale_fill_hue(direction = 1) +
-  coord_flip() +  
+  coord_flip() +
   labs(
     x = "CWE Top List",
     y = "Vulnerabilidades",
@@ -220,6 +224,7 @@ plot.cwetop <- ggplot(cwe.merge1) +
   ) +
   theme_classic() +
   theme(
+    legend.position = "",
     plot.title = element_text(
       size = 25L,
       face = "bold",
@@ -233,19 +238,22 @@ plot.cwetop <- ggplot(cwe.merge1) +
       size = 15L,
       face = "bold"
     )
-  )
+  ) + guides(fill = guide_legend(nrow = 20, byrow = TRUE))
 
 #
 # Cuadro de vulnerabilidades encontradas que están dentro del OWAS Top List
 #
 
-cwe.merge2 <- dfcwe %>% inner_join(owastop.final, by="cwe") %>% select(cwe) %>% group_by(cwe) %>% count(cwe)
+cwe.merge2 <- dfcwe %>% inner_join(owastop.final, by="cwe") %>% select(cwe, nombre) %>% group_by(cwe, nombre) %>% count(cwe)
+
+cwe.legend2 <- cwe.merge2[order(cwe.merge2$n, cwe.merge2$nombre, decreasing = TRUE), ] %>% select(cwe, nombre)
 
 plot.owastop <- ggplot(cwe.merge2) +
-  aes(x = cwe, fill = cwe, weight = n) +
+  aes(x = cwe, fill = nombre, weight = n) +
+  scale_x_discrete(limits = cwe.merge2$cwe[order(-cwe.merge2$n, decreasing = TRUE)]) +
+  scale_fill_hue(limits = cwe.merge2$nombre[order(-cwe.merge2$n, decreasing = FALSE)], l = 40, c = 65 ) +  
   geom_bar() +
   geom_text(aes(y = n, label = n, hjust = -0.3))+  
-  scale_fill_hue(direction = 1) +
   coord_flip() +  
   labs(
     x = "OWAS Top List",
@@ -255,6 +263,7 @@ plot.owastop <- ggplot(cwe.merge2) +
   ) +
   theme_classic() +
   theme(
+    legend.position = "",
     plot.title = element_text(
       size = 25L,
       face = "bold",
